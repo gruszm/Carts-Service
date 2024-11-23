@@ -19,6 +19,10 @@ public class CartEntry
     @Column(name = "quantity")
     private short quantity;
 
+    @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    @JoinColumn(name = "cart_id")
+    private Cart cart;
+
     public long getId()
     {
         return id;
@@ -47,5 +51,15 @@ public class CartEntry
     public void setQuantity(short quantity)
     {
         this.quantity = quantity;
+    }
+
+    public Cart getCart()
+    {
+        return cart;
+    }
+
+    public void setCart(Cart cart)
+    {
+        this.cart = cart;
     }
 }
