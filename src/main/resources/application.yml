@@ -1,0 +1,6 @@
+spring:
+  application:
+    name: carts_service
+  jpa:
+    hibernate:
+      ddl-auto: update
