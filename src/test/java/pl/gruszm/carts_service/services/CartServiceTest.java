@@ -1,25 +1,39 @@
 package pl.gruszm.carts_service.services;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import pl.gruszm.carts_service.entities.Cart;
+import pl.gruszm.carts_service.repositories.CartRepository;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.*;
 
+@ExtendWith(MockitoExtension.class)
 class CartServiceTest
 {
-    @BeforeEach
-    void setUp()
-    {
-    }
+    @Mock
+    private CartRepository cartRepository;
 
-    @AfterEach
-    void tearDown()
-    {
-    }
+    @InjectMocks
+    private CartService cartService;
 
     @Test
-    void getCartByUserId()
+    void shouldReturnCartForGivenUserId()
     {
+        // Given
+        Long userId = 1L;
+        Cart mockCart = new Cart();
+        mockCart.setUserId(userId);
+        when(cartRepository.getByUserId(userId)).thenReturn(mockCart);
+
+        // When
+        Cart result = cartService.getCartByUserId(userId);
+
+        // Then
+        assertThat(result).isEqualTo(mockCart);
+        verify(cartRepository, times(1)).getByUserId(userId);
     }
 }
