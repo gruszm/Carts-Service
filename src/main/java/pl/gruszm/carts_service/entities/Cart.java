@@ -17,7 +17,7 @@ public class Cart
 
     @Column(name = "userId")
     @NotNull
-    private Long userId;
+    private long userId;
 
     @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<CartEntry> cartEntries;
@@ -32,12 +32,12 @@ public class Cart
         this.id = id;
     }
 
-    public @NotNull Long getUserId()
+    public long getUserId()
     {
         return userId;
     }
 
-    public void setUserId(@NotNull Long userId)
+    public void setUserId(long userId)
     {
         this.userId = userId;
     }
