@@ -5,5 +5,5 @@ import pl.gruszm.carts_service.entities.Cart;
 
 public interface CartRepository extends JpaRepository<Cart, Long>
 {
-    Cart getByUserId(Long userId);
+    Cart getCartByUserId(Long userId);
 }

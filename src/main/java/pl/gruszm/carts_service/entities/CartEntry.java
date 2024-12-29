@@ -23,6 +23,13 @@ public class CartEntry
     @JoinColumn(name = "cart_id")
     private Cart cart;
 
+    public CartEntry(Cart cart, Long productId, short quantity)
+    {
+        this.cart = cart;
+        this.productId = productId;
+        this.quantity = quantity;
+    }
+
     public long getId()
     {
         return id;

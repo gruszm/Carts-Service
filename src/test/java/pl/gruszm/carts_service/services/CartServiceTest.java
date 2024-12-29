@@ -27,13 +27,13 @@ class CartServiceTest
         Long userId = 1L;
         Cart mockCart = new Cart();
         mockCart.setUserId(userId);
-        when(cartRepository.getByUserId(userId)).thenReturn(mockCart);
+        when(cartRepository.getCartByUserId(userId)).thenReturn(mockCart);
 
         // When
         Cart result = cartService.getCartByUserId(userId);
 
         // Then
         assertThat(result).isEqualTo(mockCart);
-        verify(cartRepository, times(1)).getByUserId(userId);
+        verify(cartRepository, times(1)).getCartByUserId(userId);
     }
 }

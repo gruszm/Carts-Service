@@ -3,6 +3,7 @@ package pl.gruszm.carts_service.entities;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -18,7 +19,7 @@ public class Cart
     @NotNull
     private Long userId;
 
-    @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<CartEntry> cartEntries;
 
     public long getId()
@@ -49,5 +50,15 @@ public class Cart
     public void setCartEntries(List<CartEntry> cartEntries)
     {
         this.cartEntries = cartEntries;
+    }
+
+    public void addCartEntry(CartEntry cartEntry)
+    {
+        if (this.cartEntries == null)
+        {
+            this.cartEntries = new ArrayList<>();
+        }
+
+        this.cartEntries.add(cartEntry);
     }
 }
