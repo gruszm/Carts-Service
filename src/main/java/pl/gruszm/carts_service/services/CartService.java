@@ -47,6 +47,7 @@ public class CartService
         if (existingEntry == null)
         {
             existingEntry = new CartEntry(cart, productId, quantity);
+            cart.addCartEntry(existingEntry);
         }
         // If there is a cart entry, sum the quantities
         else
