@@ -12,12 +12,12 @@ public class CartService
     @Autowired
     private CartRepository cartRepository;
 
-    public Cart getCartByUserId(Long userId)
+    public Cart getCartByUserId(long userId)
     {
         return cartRepository.getCartByUserId(userId);
     }
 
-    public Cart addProductToCart(Long userId, Long productId, short quantity)
+    public Cart addProductToCart(long userId, long productId, short quantity)
     {
         Cart cart = cartRepository.getCartByUserId(userId);
 
