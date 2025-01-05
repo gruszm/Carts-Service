@@ -68,4 +68,37 @@ class CartServiceTest
         verify(cartRepository, times(1)).getCartByUserId(userId);
         verify(cartRepository, times(1)).save(any(Cart.class));
     }
+
+    @Test
+    void shouldFindExistingCartAndCreateCartEntry()
+    {
+        // Given
+        long userId = 0L;
+        long productId = 0L;
+        short quantity = 5;
+        Cart existingCart = new Cart();
+
+        existingCart.setUserId(userId);
+
+        when(cartRepository.getCartByUserId(userId)).thenReturn(existingCart);
+        when(cartRepository.save(any(Cart.class))).thenAnswer(invocationOnMock -> invocationOnMock.getArgument(0));
+
+        // When
+        Cart result = cartService.addProductToCart(userId, productId, quantity);
+
+        // Then
+        assertNotNull(result);
+        assertEquals(userId, result.getUserId());
+        assertNotNull(result.getCartEntries());
+        assertEquals(1, result.getCartEntries().size());
+
+        CartEntry entry = result.getCartEntries().get(0);
+
+        assertEquals(productId, entry.getProductId());
+        assertEquals(quantity, entry.getQuantity());
+        assertSame(result, entry.getCart());
+
+        verify(cartRepository, times(1)).getCartByUserId(userId);
+        verify(cartRepository, times(1)).save(any(Cart.class));
+    }
 }

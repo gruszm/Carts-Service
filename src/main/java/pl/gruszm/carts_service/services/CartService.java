@@ -34,12 +34,15 @@ public class CartService
         // If there is a cart, check if there is already a cart entry with this productId in it
         CartEntry existingEntry = null;
 
-        for (CartEntry singleEntry : cart.getCartEntries())
+        if (cart.getCartEntries() != null)
         {
-            if (singleEntry.getProductId() == productId)
+            for (CartEntry singleEntry : cart.getCartEntries())
             {
-                existingEntry = singleEntry;
-                break;
+                if (singleEntry.getProductId() == productId)
+                {
+                    existingEntry = singleEntry;
+                    break;
+                }
             }
         }
 
