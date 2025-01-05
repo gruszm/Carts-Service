@@ -103,6 +103,50 @@ class CartServiceTest
     }
 
     @Test
+    void shouldFindExistingCartWithOtherProductAndCreateNewEntry()
+    {
+        // Given
+        long userId = 0L;
+        long existingProductId = 0L;
+        short existingProductQuantity = 1;
+        long newProductId = 1L;
+        short newProductQuantity = 1;
+
+        Cart existingCart = new Cart();
+        CartEntry existingEntry = new CartEntry(existingCart, existingProductId, existingProductQuantity);
+
+        existingCart.setUserId(userId);
+        existingCart.addCartEntry(existingEntry);
+
+        when(cartRepository.getCartByUserId(userId)).thenReturn(existingCart);
+        when(cartRepository.save(any(Cart.class))).thenAnswer(invocationOnMock -> invocationOnMock.getArgument(0));
+
+        // When
+        Cart result = cartService.addProductToCart(userId, newProductId, newProductQuantity);
+
+        // Then
+        assertNotNull(result);
+        assertEquals(userId, result.getUserId());
+        assertNotNull(result.getCartEntries());
+        assertEquals(2, result.getCartEntries().size());
+
+        CartEntry entry1 = result.getCartEntries().get(0);
+
+        assertEquals(existingProductId, entry1.getProductId());
+        assertEquals(existingProductQuantity, entry1.getQuantity());
+        assertSame(existingCart, entry1.getCart());
+
+        CartEntry entry2 = result.getCartEntries().get(1);
+
+        assertEquals(newProductId, entry2.getProductId());
+        assertEquals(newProductQuantity, entry2.getQuantity());
+        assertSame(existingCart, entry2.getCart());
+
+        verify(cartRepository, times(1)).getCartByUserId(userId);
+        verify(cartRepository, times(1)).save(any(Cart.class));
+    }
+
+    @Test
     void shouldFindExistingCartEntryAndIncreaseQuantity()
     {
         // Given
