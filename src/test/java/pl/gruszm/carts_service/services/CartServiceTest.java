@@ -101,4 +101,41 @@ class CartServiceTest
         verify(cartRepository, times(1)).getCartByUserId(userId);
         verify(cartRepository, times(1)).save(any(Cart.class));
     }
+
+    @Test
+    void shouldFindExistingCartEntryAndIncreaseQuantity()
+    {
+        // Given
+        long userId = 0L;
+        long productId = 0L;
+        short initialQuantity = 5;
+        short extraQuantity = 10;
+
+        Cart existingCart = new Cart();
+        CartEntry existingEntry = new CartEntry(existingCart, productId, initialQuantity);
+
+        existingCart.setUserId(userId);
+        existingCart.addCartEntry(existingEntry);
+
+        when(cartRepository.getCartByUserId(userId)).thenReturn(existingCart);
+        when(cartRepository.save(any(Cart.class))).thenAnswer(invocationOnMock -> invocationOnMock.getArgument(0));
+
+        // When
+        Cart result = cartService.addProductToCart(userId, productId, extraQuantity);
+
+        // Then
+        assertNotNull(result);
+        assertEquals(userId, result.getUserId());
+        assertNotNull(result.getCartEntries());
+        assertEquals(1, result.getCartEntries().size());
+
+        CartEntry entry = result.getCartEntries().get(0);
+
+        assertEquals(productId, entry.getProductId());
+        assertEquals((initialQuantity + extraQuantity), entry.getQuantity());
+        assertSame(result, entry.getCart());
+
+        verify(cartRepository, times(1)).getCartByUserId(userId);
+        verify(cartRepository, times(1)).save(any(Cart.class));
+    }
 }
