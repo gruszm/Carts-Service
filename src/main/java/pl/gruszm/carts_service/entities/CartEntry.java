@@ -1,7 +1,6 @@
 package pl.gruszm.carts_service.entities;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "cart_entries")
@@ -13,8 +12,7 @@ public class CartEntry
     private long id;
 
     @Column(name = "productId")
-    @NotNull
-    private Long productId;
+    private long productId;
 
     @Column(name = "quantity")
     private short quantity;
@@ -22,6 +20,13 @@ public class CartEntry
     @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     @JoinColumn(name = "cart_id")
     private Cart cart;
+
+    public CartEntry(Cart cart, long productId, short quantity)
+    {
+        this.cart = cart;
+        this.productId = productId;
+        this.quantity = quantity;
+    }
 
     public long getId()
     {
@@ -33,12 +38,12 @@ public class CartEntry
         this.id = id;
     }
 
-    public @NotNull Long getProductId()
+    public long getProductId()
     {
         return productId;
     }
 
-    public void setProductId(@NotNull Long productId)
+    public void setProductId(long productId)
     {
         this.productId = productId;
     }
