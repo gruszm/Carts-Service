@@ -182,4 +182,43 @@ class CartServiceTest
         verify(cartRepository, times(1)).getCartByUserId(userId);
         verify(cartRepository, times(1)).save(any(Cart.class));
     }
+
+    @Test
+    void shouldThrowIllegalArgumentExceptionWhenGivenNegativeUserId()
+    {
+        // Given
+        long userId = -1L;
+        long productId = 0L;
+        short quantity = 5;
+
+        // When
+        // Then
+        assertThrows(IllegalArgumentException.class, () -> cartService.addProductToCart(userId, productId, quantity));
+    }
+
+    @Test
+    void shouldThrowIllegalArgumentExceptionWhenGivenNegativeProductId()
+    {
+        // Given
+        long userId = 0L;
+        long productId = -1L;
+        short quantity = 5;
+
+        // When
+        // Then
+        assertThrows(IllegalArgumentException.class, () -> cartService.addProductToCart(userId, productId, quantity));
+    }
+
+    @Test
+    void shouldThrowIllegalArgumentExceptionWhenGivenNonPositiveQuantity()
+    {
+        // Given
+        long userId = 0L;
+        long productId = 0L;
+        short quantity = 0;
+
+        // When
+        // Then
+        assertThrows(IllegalArgumentException.class, () -> cartService.addProductToCart(userId, productId, quantity));
+    }
 }

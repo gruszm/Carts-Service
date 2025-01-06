@@ -17,8 +17,13 @@ public class CartService
         return cartRepository.getCartByUserId(userId);
     }
 
-    public Cart addProductToCart(long userId, long productId, short quantity)
+    public Cart addProductToCart(long userId, long productId, short quantity) throws IllegalArgumentException
     {
+        if (userId < 0L || productId < 0L || quantity <= 0)
+        {
+            throw new IllegalArgumentException("Illegal argument: userId and productId must be non-negative, quantity must be positive.");
+        }
+
         Cart cart = cartRepository.getCartByUserId(userId);
 
         // If there is no cart for this user, create one and add a new cart entry to it
