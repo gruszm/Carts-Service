@@ -41,14 +41,10 @@ public class CartService
 
         if (cart.getCartEntries() != null)
         {
-            for (CartEntry singleEntry : cart.getCartEntries())
-            {
-                if (singleEntry.getProductId() == productId)
-                {
-                    existingEntry = singleEntry;
-                    break;
-                }
-            }
+            existingEntry = cart.getCartEntries()
+                    .stream()
+                    .filter(entry -> entry.getProductId() == productId).findFirst()
+                    .orElse(null);
         }
 
         // If there is no existing cart entry in the cart, create a new one
