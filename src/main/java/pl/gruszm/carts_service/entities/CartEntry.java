@@ -21,6 +21,11 @@ public class CartEntry
     @JoinColumn(name = "cart_id")
     private Cart cart;
 
+    public CartEntry()
+    {
+
+    }
+
     public CartEntry(Cart cart, long productId, short quantity)
     {
         this.cart = cart;
