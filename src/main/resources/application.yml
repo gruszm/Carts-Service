@@ -4,3 +4,5 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
+server:
+  port: ${CARTS_SERVICE_PORT}

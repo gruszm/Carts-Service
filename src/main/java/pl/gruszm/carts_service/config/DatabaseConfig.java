@@ -1,5 +1,6 @@
 package pl.gruszm.carts_service.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -9,19 +10,27 @@ import javax.sql.DataSource;
 @Configuration
 public class DatabaseConfig
 {
-    private static final String DB_NAME = "carts_db";
-    private static final String DB_PORT = "5432";
+    @Value("${CARTS_DB_USER}")
+    private String dbUsername;
+
+    @Value("${CARTS_DB_PASSWORD}")
+    private String dbPassword;
+
+    @Value("${CARTS_DB_SERVICE_NAME}")
+    private String dbServiceName;
+
+    @Value("${CARTS_DB_SERVICE_PORT}")
+    private String dbServicePort;
+
+    @Value("${CARTS_DB_NAME}")
+    private String dbName;
 
     @Bean
     public DataSource getDataSource()
     {
-        String dbUsername = System.getenv("CARTS_DB_USER");
-        String dbPassword = System.getenv("CARTS_DB_PASSWORD");
-        String dbServiceName = System.getenv("CARTS_DB_SERVICE_NAME");
-
         System.out.println("Trying to connect to the database with parameters:\n" +
-                "\tDB_NAME = " + DB_NAME + "\n" +
-                "\tDB_PORT = " + DB_PORT + "\n" +
+                "\tdbName = " + dbName + "\n" +
+                "\tdbServicePort = " + dbServicePort + "\n" +
                 "\tdbUsername = " + dbUsername + "\n" +
                 "\tdbPassword = " + dbPassword + "\n" +
                 "\tdbServiceName = " + dbServiceName);
@@ -38,7 +47,7 @@ public class DatabaseConfig
     {
         return "jdbc:postgresql://"
                 + dbServiceName + ":"
-                + DB_PORT + "/"
-                + DB_NAME;
+                + dbServicePort + "/"
+                + dbName;
     }
 }
