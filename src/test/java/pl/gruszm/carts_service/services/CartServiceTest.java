@@ -7,6 +7,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import pl.gruszm.carts_service.entities.Cart;
 import pl.gruszm.carts_service.entities.CartEntry;
+import pl.gruszm.carts_service.repositories.CartEntryRepository;
 import pl.gruszm.carts_service.repositories.CartRepository;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -18,6 +19,9 @@ class CartServiceTest
 {
     @Mock
     private CartRepository cartRepository;
+
+    @Mock
+    private CartEntryRepository cartEntryRepository;
 
     @InjectMocks
     private CartService cartService;
@@ -220,5 +224,18 @@ class CartServiceTest
         // When
         // Then
         assertThrows(IllegalArgumentException.class, () -> cartService.addProductToCart(userId, productId, quantity));
+    }
+
+    @Test
+    void shouldThrowIllegalArgumentExceptionOnNegativeUserId()
+    {
+        // Given
+        long userId = -1L;
+        long cartEntryId = 0L;
+        short quantity = 0;
+
+        // When
+        // Then
+        assertThrows(IllegalArgumentException.class, () -> cartService.setProductQuantityInCart(userId, cartEntryId, quantity));
     }
 }
