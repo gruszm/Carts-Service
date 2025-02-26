@@ -104,10 +104,16 @@ public class CartService
             throw new EntryNotLinkedToCartException("Entry with id: " + cartEntryId + " is not linked to the cart, which belongs to user with id: " + userId);
         }
 
+        // If the quantity is supposed to be 0, then delete the entry
         if (quantity == 0)
         {
-            cart.getCartEntries()
-            cartEntryRepository.delete(cartEntry);
+            cart.getCartEntries().remove(cartEntry);
         }
+        else
+        {
+            cartEntry.setQuantity(quantity);
+        }
+
+        return cartRepository.save(cart);
     }
 }
