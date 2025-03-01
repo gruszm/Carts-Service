@@ -369,7 +369,7 @@ class CartServiceTest
 
         when(cartRepository.getCartByUserId(userId)).thenReturn(cart);
         when(cartEntryRepository.getCartEntryById(cartEntryId)).thenReturn(cartEntry);
-        when(cartRepository.save(any(Cart.class))).thenReturn(cart);
+        when(cartRepository.save(any(Cart.class))).thenAnswer(invocationOnMock -> invocationOnMock.getArgument(0));
 
         // When
         Cart returnedCart = cartService.setProductQuantityInCart(userId, cartEntryId, quantity);

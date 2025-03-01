@@ -77,7 +77,7 @@ public class CartService
     {
         if (userId < 0L || cartEntryId < 0L || quantity < 0)
         {
-            throw new IllegalArgumentException("Illegal argument: userId cartEntryId and quantity must be non-negative.");
+            throw new IllegalArgumentException("Illegal argument: userId, cartEntryId and quantity must be non-negative.");
         }
 
         Cart cart = cartRepository.getCartByUserId(userId);
