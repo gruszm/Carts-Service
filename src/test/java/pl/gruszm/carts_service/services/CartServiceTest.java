@@ -7,6 +7,10 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import pl.gruszm.carts_service.entities.Cart;
 import pl.gruszm.carts_service.entities.CartEntry;
+import pl.gruszm.carts_service.exceptions.CartNotFoundException;
+import pl.gruszm.carts_service.exceptions.EntryNotFoundException;
+import pl.gruszm.carts_service.exceptions.EntryNotLinkedToCartException;
+import pl.gruszm.carts_service.repositories.CartEntryRepository;
 import pl.gruszm.carts_service.repositories.CartRepository;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -18,6 +22,9 @@ class CartServiceTest
 {
     @Mock
     private CartRepository cartRepository;
+
+    @Mock
+    private CartEntryRepository cartEntryRepository;
 
     @InjectMocks
     private CartService cartService;
@@ -220,5 +227,155 @@ class CartServiceTest
         // When
         // Then
         assertThrows(IllegalArgumentException.class, () -> cartService.addProductToCart(userId, productId, quantity));
+    }
+
+    @Test
+    void shouldThrowIllegalArgumentExceptionOnNegativeUserId()
+    {
+        // Given
+        long userId = -1L;
+        long cartEntryId = 0L;
+        short quantity = 0;
+
+        // When
+        // Then
+        assertThrows(IllegalArgumentException.class, () -> cartService.setProductQuantityInCart(userId, cartEntryId, quantity));
+    }
+
+    @Test
+    void shouldThrowIllegalArgumentExceptionOnNegativeCartEntryId()
+    {
+        // Given
+        long userId = 0L;
+        long cartEntryId = -1L;
+        short quantity = 0;
+
+        // When
+        // Then
+        assertThrows(IllegalArgumentException.class, () -> cartService.setProductQuantityInCart(userId, cartEntryId, quantity));
+    }
+
+    @Test
+    void shouldThrowIllegalArgumentExceptionOnNegativeQuantity()
+    {
+        // Given
+        long userId = 0L;
+        long cartEntryId = 0L;
+        short quantity = -1;
+
+        // When
+        // Then
+        assertThrows(IllegalArgumentException.class, () -> cartService.setProductQuantityInCart(userId, cartEntryId, quantity));
+    }
+
+    @Test
+    void shouldThrowWhenCartDoesNotExist()
+    {
+        // Given
+        long userId = 0L;
+        long cartEntryId = 0L;
+        short quantity = 1;
+
+        when(cartRepository.getCartByUserId(userId)).thenReturn(null);
+
+        // When
+        // Then
+        assertThrows(CartNotFoundException.class, () -> cartService.setProductQuantityInCart(userId, cartEntryId, quantity));
+    }
+
+    @Test
+    void shouldThrowWhenCartEntryIsNull()
+    {
+        // Given
+        long userId = 0L;
+        long cartEntryId = 0L;
+        short quantity = 1;
+        Cart cart = new Cart();
+
+        cart.setUserId(userId);
+
+        when(cartRepository.getCartByUserId(userId)).thenReturn(cart);
+        when(cartEntryRepository.getCartEntryById(cartEntryId)).thenReturn(null);
+
+        // When
+        // Then
+        assertThrows(EntryNotFoundException.class, () -> cartService.setProductQuantityInCart(userId, cartEntryId, quantity));
+    }
+
+    @Test
+    void shouldThrowWhenEntryNotLinkedToCart()
+    {
+        // Given
+        long userId = 0L;
+        long linkedCartEntryId = 0L;
+        long unlinkedCartEntryId = 1L;
+        short quantity = 1;
+        Cart cart = new Cart();
+        CartEntry linkedCartEntry = new CartEntry();
+        CartEntry unlinkedCartEntry = new CartEntry();
+
+        cart.addCartEntry(linkedCartEntry);
+        linkedCartEntry.setId(linkedCartEntryId);
+        linkedCartEntry.setCart(cart);
+        unlinkedCartEntry.setId(unlinkedCartEntryId);
+
+        when(cartRepository.getCartByUserId(userId)).thenReturn(cart);
+        when(cartEntryRepository.getCartEntryById(unlinkedCartEntryId)).thenReturn(unlinkedCartEntry);
+
+        // When
+        // Then
+        assertThrows(EntryNotLinkedToCartException.class, () -> cartService.setProductQuantityInCart(userId, unlinkedCartEntryId, quantity));
+    }
+
+    @Test
+    void shouldSetTheQuantityToDesiredValue() throws EntryNotFoundException, EntryNotLinkedToCartException, CartNotFoundException
+    {
+        // Given
+        long userId = 0L;
+        long cartEntryId = 0L;
+        short quantity = 1;
+        Cart cart = new Cart();
+        CartEntry cartEntry = new CartEntry();
+
+        cart.addCartEntry(cartEntry);
+        cartEntry.setId(cartEntryId);
+        cartEntry.setCart(cart);
+
+        when(cartRepository.getCartByUserId(userId)).thenReturn(cart);
+        when(cartEntryRepository.getCartEntryById(cartEntryId)).thenReturn(cartEntry);
+        when(cartRepository.save(any(Cart.class))).thenReturn(cart);
+
+        // When
+        Cart returnedCart = cartService.setProductQuantityInCart(userId, cartEntryId, quantity);
+
+        // Then
+        assertEquals(quantity, cartEntry.getQuantity());
+        assertEquals(cart, returnedCart);
+    }
+
+    @Test
+    void shouldDeleteTheCartEntryFromCart() throws EntryNotFoundException, EntryNotLinkedToCartException, CartNotFoundException
+    {
+        // Given
+        long userId = 0L;
+        long cartEntryId = 0L;
+        short quantity = 0;
+        Cart cart = new Cart();
+        CartEntry cartEntry = new CartEntry();
+
+        cart.addCartEntry(cartEntry);
+        cartEntry.setId(cartEntryId);
+        cartEntry.setCart(cart);
+
+        when(cartRepository.getCartByUserId(userId)).thenReturn(cart);
+        when(cartEntryRepository.getCartEntryById(cartEntryId)).thenReturn(cartEntry);
+        when(cartRepository.save(any(Cart.class))).thenAnswer(invocationOnMock -> invocationOnMock.getArgument(0));
+
+        // When
+        Cart returnedCart = cartService.setProductQuantityInCart(userId, cartEntryId, quantity);
+
+        // Then
+        assertEquals(cart, returnedCart);
+        assertEquals(0, cart.getCartEntries().size());
     }
 }
