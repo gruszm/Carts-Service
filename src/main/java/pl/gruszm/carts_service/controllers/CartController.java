@@ -52,7 +52,7 @@ public class CartController
         }
         catch (Exception e)
         {
-            errorResponse.put("message", e.getMessage());
+            errorResponse.put("message", "Internal server error");
 
             return ResponseEntity.internalServerError().body(errorResponse);
         }
