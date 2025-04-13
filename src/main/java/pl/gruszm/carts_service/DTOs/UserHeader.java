@@ -1,6 +1,6 @@
 package pl.gruszm.carts_service.DTOs;
 
-public class UserDTO
+public class UserHeader
 {
     private long id;
     private String email;
