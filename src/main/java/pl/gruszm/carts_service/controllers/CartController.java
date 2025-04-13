@@ -1,11 +1,11 @@
 package pl.gruszm.carts_service.controllers;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import pl.gruszm.carts_service.DTOs.UserHeader;
 import pl.gruszm.carts_service.services.CartService;
 
 import java.util.HashMap;
@@ -18,14 +18,29 @@ public class CartController
     @Autowired
     private CartService cartService;
 
-    @PostMapping("/secure/carts/{userId}/{productId}/{quantity}")
-    public ResponseEntity<?> addProductToCart(@PathVariable("userId") long userId, @PathVariable("productId") long productId, @PathVariable("quantity") short quantity)
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    @PostMapping("/secure/carts/{productId}/{quantity}")
+    public ResponseEntity<?> addProductToCart(@PathVariable("productId") long productId, @PathVariable("quantity") short quantity, @RequestHeader("X-User") String userHeaderJson)
     {
         Map<String, String> errorResponse = new HashMap<>();
+        UserHeader userHeader;
 
         try
         {
-            cartService.addProductToCart(userId, productId, quantity);
+            userHeader = objectMapper.readValue(userHeaderJson, UserHeader.class);
+        }
+        catch (JsonProcessingException e)
+        {
+            errorResponse.put("message", e.getMessage());
+
+            return ResponseEntity.internalServerError().body(errorResponse);
+        }
+
+        try
+        {
+            cartService.addProductToCart(userHeader.getId(), productId, quantity);
 
             return ResponseEntity.ok().build();
         }
