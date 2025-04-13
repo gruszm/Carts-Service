@@ -2,10 +2,8 @@ package pl.gruszm.carts_service.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import pl.gruszm.carts_service.DTOs.UserDTO;
 import pl.gruszm.carts_service.services.CartService;
 
 import java.util.HashMap;
@@ -18,14 +16,14 @@ public class CartController
     @Autowired
     private CartService cartService;
 
-    @PostMapping("/secure/carts/{userId}/{productId}/{quantity}")
-    public ResponseEntity<?> addProductToCart(@PathVariable("userId") long userId, @PathVariable("productId") long productId, @PathVariable("quantity") short quantity)
+    @PostMapping("/secure/carts/{productId}/{quantity}")
+    public ResponseEntity<?> addProductToCart(@PathVariable("productId") long productId, @PathVariable("quantity") short quantity, @RequestHeader("user") UserDTO user)
     {
         Map<String, String> errorResponse = new HashMap<>();
 
         try
         {
-            cartService.addProductToCart(userId, productId, quantity);
+            cartService.addProductToCart(user.getId(), productId, quantity);
 
             return ResponseEntity.ok().build();
         }
