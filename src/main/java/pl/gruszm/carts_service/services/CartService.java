@@ -121,7 +121,6 @@ public class CartService
 
         Cart cart = cartRepository.getCartByUserId(userId);
 
-        // The cart must exist in order to change the quantity
         if (cart == null)
         {
             throw new CartNotFoundException("Cart does not exist for userId: " + userId);
