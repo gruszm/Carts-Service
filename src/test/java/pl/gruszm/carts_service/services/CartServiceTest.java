@@ -30,7 +30,7 @@ class CartServiceTest
     private CartService cartService;
 
     @Test
-    void shouldReturnCartForGivenUserId()
+    void shouldReturnCartForGivenUserId() throws CartNotFoundException
     {
         // Given
         long userId = 1L;
@@ -39,11 +39,34 @@ class CartServiceTest
         when(cartRepository.getCartByUserId(userId)).thenReturn(mockCart);
 
         // When
-        Cart result = cartService.getCartByUserId(userId);
+        Cart result = cartService.getCartForUser(userId);
 
         // Then
         assertThat(result).isEqualTo(mockCart);
         verify(cartRepository, times(1)).getCartByUserId(userId);
+    }
+
+    @Test
+    void shouldThrowWhenUserIdNegativeIsGiven()
+    {
+        // Given
+        long userId = -1L;
+
+        // When
+        // Then
+        assertThrows(IllegalArgumentException.class, () -> cartService.getCartForUser(userId));
+    }
+
+    @Test
+    void shouldThrowWhenCartNotFound()
+    {
+        // Given
+        long userId = 0L;
+        when(cartRepository.getCartByUserId(userId)).thenReturn(null);
+
+        // When
+        // Then
+        assertThrows(CartNotFoundException.class, () -> cartService.getCartForUser(userId));
     }
 
     @Test

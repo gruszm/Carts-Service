@@ -1,5 +1,6 @@
 package pl.gruszm.carts_service.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 @Entity
@@ -17,6 +18,7 @@ public class CartEntry
     @Column(name = "quantity")
     private short quantity;
 
+    @JsonIgnore
     @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     @JoinColumn(name = "cart_id")
     private Cart cart;

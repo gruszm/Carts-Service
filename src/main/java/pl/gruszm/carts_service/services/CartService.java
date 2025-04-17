@@ -19,11 +19,6 @@ public class CartService
     @Autowired
     private CartEntryRepository cartEntryRepository;
 
-    public Cart getCartByUserId(long userId)
-    {
-        return cartRepository.getCartByUserId(userId);
-    }
-
     public Cart addProductToCart(long userId, long productId, short quantity) throws IllegalArgumentException
     {
         if (userId < 0L || productId < 0L || quantity <= 0)
@@ -115,5 +110,22 @@ public class CartService
         }
 
         return cartRepository.save(cart);
+    }
+
+    public Cart getCartForUser(long userId) throws IllegalArgumentException, CartNotFoundException
+    {
+        if (userId < 0L)
+        {
+            throw new IllegalArgumentException("Illegal argument: userId must be non-negative.");
+        }
+
+        Cart cart = cartRepository.getCartByUserId(userId);
+
+        if (cart == null)
+        {
+            throw new CartNotFoundException("Cart does not exist for userId: " + userId);
+        }
+
+        return cart;
     }
 }
