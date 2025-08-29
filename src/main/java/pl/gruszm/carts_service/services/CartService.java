@@ -19,6 +19,25 @@ public class CartService
     @Autowired
     private CartEntryRepository cartEntryRepository;
 
+    public Cart clearCart(Long userId) throws IllegalArgumentException
+    {
+        if (userId < 0L)
+        {
+            throw new IllegalArgumentException("Illegal argument: userId cannot be negative.");
+        }
+
+        Cart cart = cartRepository.getCartByUserId(userId);
+
+        if (cart == null)
+        {
+            return null;
+        }
+
+        cart.getCartEntries().clear();
+
+        return cartRepository.save(cart);
+    }
+
     public Cart addProductToCart(long userId, long productId, short quantity) throws IllegalArgumentException
     {
         if (userId < 0L || productId < 0L || quantity <= 0)

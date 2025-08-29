@@ -24,6 +24,43 @@ public class CartController
     @Autowired
     private ObjectMapper objectMapper;
 
+    @DeleteMapping("/secure/carts")
+    public ResponseEntity<?> clearCart(@RequestHeader("X-User") String userHeaderJson)
+    {
+        Map<String, String> errorResponse = new HashMap<>();
+
+        try
+        {
+            UserHeader userHeader = objectMapper.readValue(userHeaderJson, UserHeader.class);
+            Cart updatedCart = cartService.clearCart(userHeader.getId());
+
+            if (updatedCart == null)
+            {
+                return ResponseEntity.internalServerError().build();
+            }
+
+            return ResponseEntity.ok().build();
+        }
+        catch (JsonProcessingException e)
+        {
+            errorResponse.put("message", e.getMessage());
+
+            return ResponseEntity.internalServerError().body(errorResponse);
+        }
+        catch (IllegalArgumentException e)
+        {
+            errorResponse.put("message", e.getMessage());
+
+            return ResponseEntity.badRequest().body(errorResponse);
+        }
+        catch (Exception e)
+        {
+            errorResponse.put("message", "Internal server error");
+
+            return ResponseEntity.internalServerError().body(errorResponse);
+        }
+    }
+
     @PostMapping("/secure/carts/{productId}/{quantity}")
     public ResponseEntity<?> addProductToCart(@PathVariable("productId") long productId, @PathVariable("quantity") short quantity, @RequestHeader("X-User") String userHeaderJson)
     {
